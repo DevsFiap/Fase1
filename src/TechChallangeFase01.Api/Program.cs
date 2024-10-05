@@ -1,25 +1,26 @@
+using TechChallangeFase01.Api.Extensions;
+using TechChallangeFase01.Infra.IoC.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddRouting(opt => opt.LowercaseUrls = true);
+builder.Services.AddSwaggerDoc();
+builder.Services.AddJwtBearer(builder.Configuration);
+builder.Services.AddCorsPolicy();
+builder.Services.AddDependencyInjection();
+builder.Services.AddAutoMapperConfig();
+builder.Services.AddDbContextConfig(builder.Configuration);
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
+app.UseSwaggerDoc(app.Environment);
+//app.UseMiddleware<ExceptionMiddleware>();
+//app.UseAuthentication();
+//app.UseAuthorization();
+app.UseCorsPolicy();
 app.MapControllers();
-
 app.Run();
+
+public partial class Program { }
