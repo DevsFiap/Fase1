@@ -14,4 +14,8 @@
     <ProjectReference Include="..\TechChallangeFase01.Infra.IoC\TechChallangeFase01.Infra.IoC.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+  </ItemGroup>
+
 </Project>
