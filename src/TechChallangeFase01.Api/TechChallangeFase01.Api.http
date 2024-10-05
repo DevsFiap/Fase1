@@ -1,0 +1,6 @@
+@TechChallangeFase01.Api_HostAddress = http://localhost:5104
+
+GET {{TechChallangeFase01.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
