@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using TechChallangeFase01.Application.Mappings;
 
 namespace TechChallangeFase01.Infra.IoC.Extensions;
 

@@ -1,4 +1,5 @@
 using TechChallangeFase01.Api.Extensions;
+using TechChallangeFase01.Api.Middlewares;
 using TechChallangeFase01.Infra.IoC.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,7 +17,7 @@ builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
 
 app.UseSwaggerDoc(app.Environment);
-//app.UseMiddleware<ExceptionMiddleware>();
+app.UseMiddleware<ExceptionMiddleware>();
 //app.UseAuthentication();
 //app.UseAuthorization();
 app.UseCorsPolicy();
