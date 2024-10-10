@@ -20,3 +20,11 @@ Para que possamos avaliar, esperamos um vídeo demonstrando os passos utilizados
 Observações <br>
 O foco principal é a qualidade do código, as boas práticas de desenvolvimento e o uso eficiente da plataforma .NET 8. Este desafio é uma oportunidade para demonstrar habilidades em persistência de dados, arquitetura de software e testes, além de boas práticas de desenvolvimento.<br>
 Ficou com alguma dúvida? Não deixe de nos chamar no Discord para que alguém da equipe te ajude!
+
+<br>Como rodar migration localmente<br>
+
+Rodar no package manager console, selecionando o projeto: TechChallangeFase01.Infra.Data
+
+add-migration adicionando-validacoes -StartupProject TechChallangeFase01.Infra.Data
+
+update-database -StartupProject TechChallangeFase01.Infra.Data
