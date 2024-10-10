@@ -9,6 +9,7 @@ public static class DbContextExtension
 {
     public static IServiceCollection AddDbContextConfig(this IServiceCollection services, IConfiguration configuration)
     {
+      
         var portalConnectionString = configuration.GetConnectionString("ContatosContext");
 
         services.AddDbContext<AppDbContext>(options

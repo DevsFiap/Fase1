@@ -13,12 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TechChallangeFase01.Domain\TechChallangeFase01.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Dto\" />
-    <Folder Include="Interfaces\" />
-    <Folder Include="Services\" />
+    <ProjectReference Include="..\TechChallangeFase01.Infra.Data\TechChallangeFase01.Infra.Data.csproj" />
   </ItemGroup>
 
 </Project>
