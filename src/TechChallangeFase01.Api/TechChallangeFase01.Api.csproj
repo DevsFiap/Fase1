@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TechChallangeFase01.Infra.Data\TechChallangeFase01.Infra.Data.csproj" />
     <ProjectReference Include="..\TechChallangeFase01.Infra.IoC\TechChallangeFase01.Infra.IoC.csproj" />
   </ItemGroup>
 

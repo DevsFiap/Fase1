@@ -1,11 +1,12 @@
 ﻿namespace TechChallangeFase01.Domain.Core;
 
-public interface IBaseRepository<TEntity> : IDisposable
-     where TEntity : class
+public interface IBaseRepository<T> : IDisposable
+     where T : class
 {
-    Task CreateAsync(TEntity entity);
-    Task UpdateAsync(TEntity entity);
-    Task DeleteAsync(TEntity entity);
-    Task<List<TEntity>> GetAllAsync();
-    Task<TEntity> GetByIdAsync(int id);
+
+    Task Criar(T entity);
+    Task Atualizar(T entity);
+    void Deletar(int id);
+    Task<List<T>> ObterTodos();
+    Task<T> ObterPorId(int id);
 }
