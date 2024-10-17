@@ -8,7 +8,7 @@ namespace TechChallangeFase01.Infra.Data.Repository
     {
         protected readonly AppDbContext _context;
         protected readonly DbSet<T> _dbSet;
-
+        private bool _disposed = false;
         public BaseRepository(AppDbContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
@@ -43,9 +43,20 @@ namespace TechChallangeFase01.Infra.Data.Repository
             _dbSet.Remove(entity);
             _context.SaveChanges();
         }
-        public void Dispose()
-        {
-            throw new NotImplementedException();
+
+        public void Dispose() {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing) {
+            if (!_disposed) {
+                if (disposing) {
+                    
+                    _context?.Dispose();
+                }
+                _disposed = true;
+            }
         }
 
         public T ObterPorId(int id)
