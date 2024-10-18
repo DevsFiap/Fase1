@@ -8,9 +8,11 @@ namespace TechChallangeFase01.Api.Controllers;
 public class ContatosController : ControllerBase
 {
     private readonly IContatosService _contatosService;
-    public ContatosController(IContatosService contatosService)
+    private readonly ILogger<ContatosController> _logger;
+    public ContatosController(IContatosService contatosService, ILogger<ContatosController> logger)
     {
         _contatosService = contatosService;
+        _logger = logger;
     }
     [HttpGet]
     public async Task<IActionResult> GetContatos()
@@ -24,6 +26,8 @@ public class ContatosController : ControllerBase
                 return NoContent();
             }
 
+
+            _logger.LogInformation("Consultando lista de todos os contatos");
             return Ok(contatos);
         }
         catch(Exception ex)
