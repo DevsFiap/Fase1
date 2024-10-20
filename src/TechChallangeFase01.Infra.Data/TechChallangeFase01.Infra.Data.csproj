@@ -29,4 +29,8 @@
     <ProjectReference Include="..\TechChallangeFase01.Domain\TechChallangeFase01.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Interfaces\" />
+  </ItemGroup>
+
 </Project>

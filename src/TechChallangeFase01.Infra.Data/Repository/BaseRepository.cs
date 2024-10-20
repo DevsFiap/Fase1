@@ -1,77 +1,97 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TechChallangeFase01.Domain.Core;
+using TechChallangeFase01.Domain.Exceptions;
 using TechChallangeFase01.Infra.Data.Context;
 
-namespace TechChallangeFase01.Infra.Data.Repository
+namespace TechChallangeFase01.Infra.Data.Repository;
+
+public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity>
+    where TEntity : class
 {
-    public class BaseRepository<T> : IBaseRepository<T> where T : class
+    private readonly AppDbContext _context;
+
+    protected BaseRepository(AppDbContext context)
+        => _context = context;
+
+    public virtual async Task<List<TEntity>> GetAllAsync()
     {
-        protected readonly AppDbContext _context;
-        protected readonly DbSet<T> _dbSet;
-        private bool _disposed = false;
-        public BaseRepository(AppDbContext context)
+        try
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _dbSet = _context.Set<T>();
+            return await _context.Set<TEntity>().ToListAsync();
         }
-
-        public void Alterar(T entidade)
+        catch (Exception ex)
         {
-            if (entidade == null) throw new ArgumentNullException(nameof(entidade));
-            _dbSet.Update(entidade);
-            _context.SaveChanges();
-        }
-
-        public async Task Atualizar(T entity)
-        {
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
-            _dbSet.Update(entity);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task Criar(T entity)
-        {
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
-            await _dbSet.AddAsync(entity);
-            await _context.SaveChangesAsync();
-        }
-
-        public void Deletar(int id)
-        {
-            var entity = ObterPorId(id);
-            if (entity == null) throw new InvalidOperationException("Entity not found.");
-            _dbSet.Remove(entity);
-            _context.SaveChanges();
-        }
-
-        public void Dispose() {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing) {
-            if (!_disposed) {
-                if (disposing) {
-                    
-                    _context?.Dispose();
-                }
-                _disposed = true;
-            }
-        }
-
-        public T ObterPorId(int id)
-        {
-            return _dbSet.Find(id);
-        }
-
-        Task<T> IBaseRepository<T>.ObterPorId(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        async Task<List<T>> IBaseRepository<T>.ObterTodos()
-        {
-            return await _dbSet.ToListAsync();
+            throw new RepositoryException("Erro ao obter todos os registros.", ex);
         }
     }
+
+    public virtual async Task<TEntity> GetByIdAsync(int id)
+    {
+        try
+        {
+            return await _context.Set<TEntity>().FindAsync(id);
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException($"Erro ao buscar a entidade com ID {id}.", ex);
+        }
+    }
+
+    public virtual async Task CreateAsync(TEntity entity)
+    {
+        try
+        {
+            await _context.Set<TEntity>().AddAsync(entity);
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException dbEx)
+        {
+            throw new RepositoryException("Erro ao criar a entidade. Verifique as restrições e integridade dos dados.", dbEx);
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException("Erro inesperado ao criar a entidade.", ex);
+        }
+    }
+
+    public virtual async Task UpdateAsync(TEntity entity)
+    {
+        try
+        {
+            _context.Set<TEntity>().Update(entity);
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException dbConEx)
+        {
+            throw new RepositoryException("Falha de concorrência ao atualizar a entidade.", dbConEx);
+        }
+        catch (DbUpdateException dbEx)
+        {
+            throw new RepositoryException("Erro ao atualizar a entidade. Verifique as restrições de integridade.", dbEx);
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException("Erro inesperado ao atualizar a entidade.", ex);
+        }
+    }
+
+    public virtual async Task DeleteAsync(TEntity entity)
+    {
+        try
+        {
+            _context.Set<TEntity>().Remove(entity);
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException dbEx)
+        {
+            throw new RepositoryException("Erro ao deletar a entidade. Verifique se a entidade está relacionada a outros dados.", dbEx);
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException("Erro inesperado ao deletar a entidade.", ex);
+        }
+    }
+
+    public void Dispose()
+        => _context.Dispose();
 }
