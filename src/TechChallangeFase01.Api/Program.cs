@@ -1,6 +1,7 @@
 using TechChallangeFase01.Api.Extensions;
 using TechChallangeFase01.Api.Middlewares;
 using TechChallangeFase01.Infra.IoC.Extensions;
+using TechChallangeFase01.Infra.IoC.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,11 @@ builder.Services.AddDependencyInjection();
 builder.Services.AddAutoMapperConfig();
 builder.Services.AddDbContextConfig(builder.Configuration);
 builder.Services.AddHttpContextAccessor();
+
+builder.Logging.ClearProviders();
+builder.Logging.AddProvider(new CustomLoggerProvider(new CustomLoggerProviderConfiguration {
+    LogLevel = LogLevel.Information,
+}));
 
 var app = builder.Build();
 

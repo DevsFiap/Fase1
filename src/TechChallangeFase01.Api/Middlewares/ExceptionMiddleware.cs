@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Net;
 using TechChallangeFase01.Api.Middlewares.Models;
+using TechChallangeFase01.Domain.Exceptions;
 
 namespace TechChallangeFase01.Api.Middlewares;
 
@@ -16,6 +17,14 @@ public class ExceptionMiddleware
         try
         {
             await _next(context);
+        }
+        catch (RepositoryException ex)
+        {
+            await HandleExceptionAsync(context, ex, HttpStatusCode.BadRequest);
+        }
+        catch (DomainException ex)
+        {
+            await HandleExceptionAsync(context, ex, HttpStatusCode.BadRequest);
         }
         catch (ApplicationException ex)
         {
