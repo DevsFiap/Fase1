@@ -1,10 +1,5 @@
 ﻿using AutoMapper;
 using FluentAssertions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TechChallangeFase01.Application.Dto;
 using TechChallangeFase01.Application.Mappings;
 using TechChallangeFase01.Domain.Entities;
@@ -26,7 +21,7 @@ namespace TechChallengeFase01.Tests.Mappings
             _mapper = config.CreateMapper();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Mapear Contato para ContatoDto com sucesso")]
         public void Should_Map_Contact_To_ContactDto()
         {
             // Arrange
@@ -40,25 +35,39 @@ namespace TechChallengeFase01.Tests.Mappings
             contatoDto.Email.Should().Be(contato.Email);
             contatoDto.DataCriacao.Should().Be(contato.DataCriacao);
             contatoDto.DDDTelefone.Should().Be(contato.DDDTelefone);
-            contatoDto.Telefone.Should().Be(contato.Telefone);
+            contatoDto.NumeroTelefone.Should().Be(contato.Telefone);
         }
 
-        [Fact]
-        public void Should_Map_ContactDto_To_Contact()
+        [Fact(DisplayName = "Mapear CriarContatoDto para Contato com sucesso")]
+        public void Should_Map_CreateContactDto_To_Contact()
         {
             // Arrange
-            var contatoDto = new ContactDtoBuilder().Build();
+            var criarContatoDto = new CriarContatoDtoBuilder().Build();
 
             // Act
-            var contato = _mapper.Map<Contato>(contatoDto);
+            var contato = _mapper.Map<Contato>(criarContatoDto);
 
             // Assert
             contato.Should().NotBeNull();
-            contato.Nome.Should().Be(contatoDto.Nome);
-            contato.Email.Should().Be(contatoDto.Email);
-            contato.DataCriacao.Should().Be(contatoDto.DataCriacao);
-            contato.DDDTelefone.Should().Be(contatoDto.DDDTelefone);
-            contato.Telefone.Should().Be(contatoDto.Telefone);
+            contato.Nome.Should().Be(criarContatoDto.Nome);
+            contato.Email.Should().Be(criarContatoDto.Email);
+            contato.Telefone.Should().Be(criarContatoDto.Telefone);
+        }
+
+        [Fact(DisplayName = "Mapear AtualizarContatoDto para Contato com sucesso")]
+        public void Should_Map_UpdateContactDtoDto_To_Contact()
+        {
+            // Arrange
+            var atualizarContatoDto = new AtualizarContatoDtoBuilder().Build();
+
+            // Act
+            var contato = _mapper.Map<Contato>(atualizarContatoDto);
+
+            // Assert
+            contato.Should().NotBeNull();
+            contato.Nome.Should().Be(atualizarContatoDto.Nome);
+            contato.Email.Should().Be(atualizarContatoDto.Email);
+            contato.Telefone.Should().Be(atualizarContatoDto.Telefone);
         }
     }
 }

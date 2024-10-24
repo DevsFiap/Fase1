@@ -9,22 +9,23 @@ using System.Threading.Tasks;
 using TechChallangeFase01.Application.Dto;
 using TechChallangeFase01.Application.Services;
 using TechChallangeFase01.Domain.Entities;
-using TechChallangeFase01.Infra.Data.Interfaces;
+using TechChallangeFase01.Domain.Interfaces.Repositories;
+using TechChallangeFase01.Domain.Interfaces.Services;
 using TechChallengeFase01.Tests.Builders;
 
 namespace TechChallengeFase01.Tests.Services
 {
     public class ContatosServiceTests
     {
-        private readonly Mock<IContatosRepository> _contatosRepositoryMock;
+        private readonly Mock<IContatoDomainService> _contatoDomainServiceMock;
         private readonly Mock<IMapper> _mapperMock;
-        private readonly ContatosService _contatosService;
+        private readonly ContatosAppService _contatosService;
 
         public ContatosServiceTests()
         {
-            _contatosRepositoryMock = new Mock<IContatosRepository>();
+            _contatoDomainServiceMock = new Mock<IContatoDomainService>();
             _mapperMock = new Mock<IMapper>();
-            _contatosService = new ContatosService(_contatosRepositoryMock.Object, _mapperMock.Object);
+            _contatosService = new ContatosAppService(_contatoDomainServiceMock.Object, _mapperMock.Object);
         }
 
         [Fact]
@@ -34,7 +35,7 @@ namespace TechChallengeFase01.Tests.Services
             var contatos = new List<Contato> { new ContactBuilder().Build() };
             var contatoDtos = new List<ContatoDto> { new ContactDtoBuilder().Build() };
 
-            _contatosRepositoryMock.Setup(repo => repo.ObterTodos()).ReturnsAsync(contatos);
+            _contatoDomainServiceMock.Setup(repo => repo.BuscarContatos()).ReturnsAsync(contatos);
             _mapperMock.Setup(mapper => mapper.Map<List<ContatoDto>>(contatos)).Returns(contatoDtos);
 
             // Act
@@ -43,7 +44,7 @@ namespace TechChallengeFase01.Tests.Services
             // Assert
             result.Should().BeEquivalentTo(contatoDtos);
 
-            _contatosRepositoryMock.Verify(repo => repo.ObterTodos(), Times.Once);
+            _contatoDomainServiceMock.Verify(repo => repo.BuscarContatos(), Times.Once);
             _mapperMock.Verify(mapper => mapper.Map<List<ContatoDto>>(contatos), Times.Once);
         }
 
@@ -54,7 +55,7 @@ namespace TechChallengeFase01.Tests.Services
             var emptyContatos = new List<Contato>();
             var emptyContatoDtos = new List<ContatoDto>();
 
-            _contatosRepositoryMock.Setup(repo => repo.ObterTodos()).ReturnsAsync(emptyContatos);
+            _contatoDomainServiceMock.Setup(repo => repo.BuscarContatos()).ReturnsAsync(emptyContatos);
             _mapperMock.Setup(mapper => mapper.Map<List<ContatoDto>>(emptyContatos)).Returns(emptyContatoDtos);
 
             // Act
@@ -63,7 +64,7 @@ namespace TechChallengeFase01.Tests.Services
             // Assert
             result.Should().BeEmpty();
 
-            _contatosRepositoryMock.Verify(repo => repo.ObterTodos(), Times.Once);
+            _contatoDomainServiceMock.Verify(repo => repo.BuscarContatos(), Times.Once);
             _mapperMock.Verify(mapper => mapper.Map<List<ContatoDto>>(emptyContatos), Times.Once);
         }
     }

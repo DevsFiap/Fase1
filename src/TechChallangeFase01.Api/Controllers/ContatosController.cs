@@ -24,7 +24,7 @@ public class ContatosController : ControllerBase
     [ProducesResponseType(typeof(IEnumerable<ContatoDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetContatos()
+    public async Task<IActionResult> BuscarContatos()
     {
         try
         {
@@ -52,9 +52,13 @@ public class ContatosController : ControllerBase
     [SwaggerOperation(Summary = "Buscar contatos por DDD")]
     [ProducesResponseType(typeof(IEnumerable<ContatoDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetByDDD(EnumDDD ddd)
+    public async Task<IActionResult> BuscarPorDDD(EnumDDD ddd)
     {
         var contatos = await _contatosAppService.ObterPorDDDAsync(ddd);
+        if (contatos == null)
+        {
+            return NoContent();
+        }
         return Ok(contatos);
     }
 
@@ -69,7 +73,14 @@ public class ContatosController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CriarContato([FromBody] CriarContatoDto dto)
     {
-        return StatusCode(201, await _contatosAppService.CriarContatoAsync(dto));
+        try
+        {
+            return StatusCode(201, await _contatosAppService.CriarContatoAsync(dto));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     /// <summary>

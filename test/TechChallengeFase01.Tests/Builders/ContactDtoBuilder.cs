@@ -12,7 +12,7 @@ namespace TechChallengeFase01.Tests.Builders
             _contatoDto = new ContatoDto
             {
                 Nome = "Nome",
-                Telefone = "999999999",
+                NumeroTelefone = "999999999",
                 Email = "email@email.com",
                 DDDTelefone = EnumDDD.Recife_PE,
                 DataCriacao = DateTime.UtcNow
