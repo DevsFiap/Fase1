@@ -4,21 +4,28 @@ namespace TechChallengeFase01.Tests.Builders
 {
     public class CriarContatoDtoBuilder
     {
-        private CriarContatoDto _contatoDto;
+        private string _telefone = "81999999999";
+        private string _nome = "Nome";
+        private string _email = "email@email.com";
 
         public CriarContatoDtoBuilder()
         {
-            _contatoDto = new CriarContatoDto
-            {
-                Nome = "Nome", 
-                Telefone = "999999999",
-                Email = "email@email.com"
-            };
+        }
+
+        public CriarContatoDtoBuilder WithInvalidTelefone()
+        {
+            _telefone = "999";
+            return this;
         }
 
         public CriarContatoDto Build()
         {
-            return _contatoDto;
+            return new CriarContatoDto
+            {
+                Nome = _nome,
+                Telefone = _telefone,
+                Email = _email
+            };
         }
     }
 }

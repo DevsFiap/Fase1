@@ -1,28 +1,27 @@
-﻿using TechChallangeFase01.Domain.Entities;
+﻿using TechChallangeFase01.Application.Dto;
 using TechChallangeFase01.Domain.Enums;
 
 namespace TechChallengeFase01.Tests.Builders
 {
-    public class ContactBuilder
+    public class ContatoDtoBuilder
     {
-        private Contato _contato;
+        private ContatoDto _contatoDto;
 
-        public ContactBuilder()
+        public ContatoDtoBuilder()
         {
-            _contato = new Contato
+            _contatoDto = new ContatoDto
             {
-                Id = 1,
                 Nome = "Nome",
-                Telefone = "999999999",
+                NumeroTelefone = "81999999999",
                 Email = "email@email.com",
                 DDDTelefone = EnumDDD.Recife_PE,
                 DataCriacao = DateTime.UtcNow
             };
         }
 
-        public Contato Build()
+        public ContatoDto Build()
         {
-            return _contato;
+            return _contatoDto;
         }
     }
 }

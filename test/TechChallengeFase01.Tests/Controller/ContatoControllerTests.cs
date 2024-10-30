@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Moq;
 using TechChallangeFase01.Api.Controllers;
 using TechChallangeFase01.Application.Dto;
@@ -18,7 +17,6 @@ namespace TechChallengeFase01.Tests.Controller
         public ContatoControllerTests()
         {
             _contatosServiceMock = new Mock<IContatosAppService>();
-
             _controller = new ContatosController(_contatosServiceMock.Object);
         }
 
@@ -26,10 +24,9 @@ namespace TechChallengeFase01.Tests.Controller
         public async Task GetContacts_Should_Return_Contacts_With_Ok_Status()
         {
             //Arrange
-
             var contacts = new List<ContatoDto>()
             {
-                 new ContactDtoBuilder().Build()
+                 new ContatoDtoBuilder().Build()
             };
 
             _contatosServiceMock.Setup(x => x.GetContatos()).ReturnsAsync(contacts);
@@ -86,7 +83,7 @@ namespace TechChallengeFase01.Tests.Controller
             var ddd = EnumDDD.Recife_PE;
             var contacts = new List<ContatoDto>()
             {
-                 new ContactDtoBuilder().Build()
+                 new ContatoDtoBuilder().Build()
             };
 
             _contatosServiceMock
@@ -126,7 +123,7 @@ namespace TechChallengeFase01.Tests.Controller
             // Arrange
             var criarContatoDto = new CriarContatoDtoBuilder().Build();
 
-            var contatoCriado = new ContactDtoBuilder().Build();
+            var contatoCriado = new ContatoDtoBuilder().Build();
 
             _contatosServiceMock
                 .Setup(service => service.CriarContatoAsync(criarContatoDto))
@@ -164,7 +161,7 @@ namespace TechChallengeFase01.Tests.Controller
             var contatoId = 1;
             var atualizarContatoDto = new AtualizarContatoDtoBuilder().Build();
 
-            var contatoAtualizado = new ContactDtoBuilder().Build();
+            var contatoAtualizado = new ContatoDtoBuilder().Build();
 
             _contatosServiceMock
                 .Setup(service => service.AtualizarContatoAsync(contatoId, atualizarContatoDto))
@@ -179,5 +176,23 @@ namespace TechChallengeFase01.Tests.Controller
             okResult.Value.Should().BeEquivalentTo(contatoAtualizado);
         }
 
+        [Fact]
+        public async Task DeletarContato_Should_Return_Ok_When_Contact_Is_Deleted_Successfully()
+        {
+            // Arrange
+            var contatoId = 1;
+
+            _contatosServiceMock
+                .Setup(service => service.ExcluirContatoAsync(contatoId))
+                .Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _controller.DeletarContato(contatoId);
+
+            // Assert
+            var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+            okResult.StatusCode.Should().Be(StatusCodes.Status200OK);
+            okResult.Value.Should().Be("Contato excluído com sucesso");
+        }
     }
 }

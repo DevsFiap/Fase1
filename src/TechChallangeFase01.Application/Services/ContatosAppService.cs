@@ -57,7 +57,8 @@ public class ContatosAppService : IContatosAppService
             await _contatoDomainService.CreateContatoAsync(contato);
 
             // Mapeie o contato criado para o ContatoDto
-            return _mapper.Map<ContatoDto>(contato);
+            var result = _mapper.Map<ContatoDto>(contato);
+            return result;
         }
         catch (Exception ex)
         {

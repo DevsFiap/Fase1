@@ -1,15 +1,10 @@
 ﻿using AutoMapper;
 using FluentAssertions;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TechChallangeFase01.Application.Dto;
 using TechChallangeFase01.Application.Services;
 using TechChallangeFase01.Domain.Entities;
-using TechChallangeFase01.Domain.Interfaces.Repositories;
+using TechChallangeFase01.Domain.Enums;
 using TechChallangeFase01.Domain.Interfaces.Services;
 using TechChallengeFase01.Tests.Builders;
 
@@ -32,8 +27,8 @@ namespace TechChallengeFase01.Tests.Services
         public async Task GetContatos_Should_Return_Contacts_When_Contacts_Exist()
         {
             // Arrange
-            var contatos = new List<Contato> { new ContactBuilder().Build() };
-            var contatoDtos = new List<ContatoDto> { new ContactDtoBuilder().Build() };
+            var contatos = new List<Contato> { new ContatoBuilder().Build() };
+            var contatoDtos = new List<ContatoDto> { new ContatoDtoBuilder().Build() };
 
             _contatoDomainServiceMock.Setup(repo => repo.BuscarContatos()).ReturnsAsync(contatos);
             _mapperMock.Setup(mapper => mapper.Map<List<ContatoDto>>(contatos)).Returns(contatoDtos);
@@ -66,6 +61,264 @@ namespace TechChallengeFase01.Tests.Services
 
             _contatoDomainServiceMock.Verify(repo => repo.BuscarContatos(), Times.Once);
             _mapperMock.Verify(mapper => mapper.Map<List<ContatoDto>>(emptyContatos), Times.Once);
+        }
+
+        [Fact]
+        public async Task ObterPorDDDAsync_Should_Return_Contacts_When_Contacts_Exist()
+        {
+            // Arrange
+            var ddd = EnumDDD.Recife_PE;
+
+            var contatos = new List<Contato> { new ContatoBuilder().Build() };
+            var contatoDtos = new List<ContatoDto> { new ContatoDtoBuilder().Build() };
+
+            _contatoDomainServiceMock.Setup(repo => repo.GetByDDDAsync(ddd)).ReturnsAsync(contatos);
+            _mapperMock.Setup(mapper => mapper.Map<IEnumerable<ContatoDto>>(contatos)).Returns(contatoDtos);
+
+            // Act
+            var result = await _contatosService.ObterPorDDDAsync(ddd);
+
+            // Assert
+            result.Should().BeEquivalentTo(contatoDtos);
+
+            _contatoDomainServiceMock.Verify(repo => repo.GetByDDDAsync(ddd), Times.Once);
+            _mapperMock.Verify(mapper => mapper.Map<IEnumerable<ContatoDto>>(contatos), Times.Once);
+        }
+
+        [Fact]
+        public async Task ObterPorDDDAsync_Should_Return_Empty_List_When_Contacts_Dont_Exist()
+        {
+            // Arrange
+            var ddd = EnumDDD.Recife_PE;
+
+            var emptyContatos = new List<Contato>();
+            var emptyContatoDtos = new List<ContatoDto>();
+
+            _contatoDomainServiceMock.Setup(repo => repo.GetByDDDAsync(ddd)).ReturnsAsync(emptyContatos);
+            _mapperMock.Setup(mapper => mapper.Map<IEnumerable<ContatoDto>>(emptyContatos)).Returns(emptyContatoDtos);
+
+            // Act
+            var result = await _contatosService.ObterPorDDDAsync(ddd);
+
+            // Assert
+            result.Should().BeEmpty();
+
+            _contatoDomainServiceMock.Verify(repo => repo.GetByDDDAsync(ddd), Times.Once);
+            _mapperMock.Verify(mapper => mapper.Map<IEnumerable<ContatoDto>>(emptyContatos), Times.Once);
+        }
+
+        [Fact]
+        public async Task CriarContatoAsync_Should_Return_Contact_Dto_When_Contact_Is_Created_Successfully()
+        {
+            // Arrange
+            var criarContatoDto = new CriarContatoDtoBuilder().Build();
+
+            var contato = new ContatoBuilder().Build();
+
+            var contatoDto = new ContatoDtoBuilder().Build();
+
+            _contatoDomainServiceMock
+                .Setup(service => service.CreateContatoAsync(It.IsAny<Contato>()))
+                .Returns(Task.CompletedTask);
+
+            _mapperMock.Setup(mapper => mapper.Map<ContatoDto>(It.IsAny<Contato>())).Returns(contatoDto);
+
+            // Act
+            var result = await _contatosService.CriarContatoAsync(criarContatoDto);
+
+            // Assert
+            result.Should().BeEquivalentTo(contatoDto);
+        }
+
+        [Fact]
+        public async Task CriarContatoAsync_Should_Throw_ApplicationException_When_Telefone_Is_Invalid()
+        {
+            // Arrange
+            var criarContatoDto = new CriarContatoDtoBuilder().WithInvalidTelefone().Build();
+
+            // Act
+            Func<Task> action = async () => await _contatosService.CriarContatoAsync(criarContatoDto);
+
+            // Assert
+            await action.Should().ThrowAsync<ApplicationException>()
+                .Where(x => x.InnerException != null
+                && x.InnerException.Message.Contains("O telefone deve ter pelo menos 10 dígitos (DDD + número)."));
+        }
+
+        [Fact]
+        public async Task CriarContatoAsync_Should_Throw_ApplicationException_When_Unexpected_Error()
+        {
+            // Arrange
+            var criarContatoDto = new CriarContatoDtoBuilder().Build();
+
+            _contatoDomainServiceMock
+                .Setup(service => service.CreateContatoAsync(It.IsAny<Contato>()))
+                .ThrowsAsync(new Exception("Error"));
+
+            // Act
+            Func<Task> action = async () => await _contatosService.CriarContatoAsync(criarContatoDto);
+
+            // Assert
+            await action.Should().ThrowAsync<ApplicationException>()
+                .WithMessage("Erro ao criar contato.");
+        }
+
+        [Fact]
+        public async Task AtualizarContatoAsync_Should_Return_ContactDto_When_Update_Is_Successful()
+        {
+            // Arrange
+            var contatoId = 1;
+            var atualizarContatoDto = new AtualizarContatoDtoBuilder().Build();
+
+            var contatoExistente = new ContatoBuilder().Build();
+
+            var contatoDto = new ContatoDtoBuilder().Build();
+
+            _contatoDomainServiceMock
+                .Setup(service => service.GetByIdAsync(contatoId))
+                .ReturnsAsync(contatoExistente);
+
+            _contatoDomainServiceMock
+                .Setup(service => service.UpdateContatoAsync(contatoId, contatoExistente))
+                .Returns(Task.CompletedTask); 
+
+            _mapperMock
+                .Setup(mapper => mapper.Map<ContatoDto>(contatoExistente))
+                .Returns(contatoDto);
+
+            // Act
+            var result = await _contatosService.AtualizarContatoAsync(contatoId, atualizarContatoDto);
+
+            // Assert
+            result.Should().BeEquivalentTo(contatoDto);
+        }
+
+        [Fact]
+        public async Task AtualizarContatoAsync_Should_Throw_ApplicationException_When_Contact_Does_Not_Exist()
+        {
+            // Arrange
+            var contatoId = 1;
+            var atualizarContatoDto = new AtualizarContatoDtoBuilder().Build();
+
+            _contatoDomainServiceMock
+                .Setup(service => service.GetByIdAsync(contatoId))
+                .ReturnsAsync((Contato)null); 
+
+            // Act
+            Func<Task> action = async () => await _contatosService.AtualizarContatoAsync(contatoId, atualizarContatoDto);
+
+            // Assert
+            await action.Should().ThrowAsync<ApplicationException>()
+                .WithMessage("Erro ao atualizar contato: Contato não encontrado.");
+        }
+
+        [Fact]
+        public async Task AtualizarContatoAsync_Should_Throw_ApplicationException_When_Telefone_Is_Invalid()
+        {
+            // Arrange
+            var contatoId = 1;
+            var atualizarContatoDto = new AtualizarContatoDtoBuilder().WithInvalidTelefone().Build();
+
+            var contatoExistente = new ContatoBuilder().Build();
+
+            _contatoDomainServiceMock
+                .Setup(service => service.GetByIdAsync(contatoId))
+                .ReturnsAsync(contatoExistente);
+
+            // Act
+            Func<Task> action = async () => await _contatosService.AtualizarContatoAsync(contatoId, atualizarContatoDto);
+
+            // Assert
+            await action.Should().ThrowAsync<ApplicationException>()
+                .WithMessage("Erro ao atualizar contato: O telefone deve ter pelo menos 10 dígitos (DDD + número).*");
+        }
+
+        [Fact]
+        public async Task AtualizarContatoAsync_Should_Throw_ApplicationException_When_Unexpected_Error()
+        {
+            // Arrange
+            var contatoId = 1;
+            var atualizarContatoDto = new AtualizarContatoDtoBuilder().Build();
+
+            var contatoExistente = new ContatoBuilder().Build();
+
+            _contatoDomainServiceMock
+                .Setup(service => service.GetByIdAsync(contatoId))
+                .ReturnsAsync(contatoExistente);
+
+            _contatoDomainServiceMock
+                .Setup(service => service.UpdateContatoAsync(contatoId, contatoExistente))
+                .ThrowsAsync(new Exception("Erro inesperado"));
+
+            // Act
+            Func<Task> action = async () => await _contatosService.AtualizarContatoAsync(contatoId, atualizarContatoDto);
+
+            // Assert
+            await action.Should().ThrowAsync<ApplicationException>()
+                .WithMessage("Erro ao atualizar contato: Erro inesperado");
+        }
+
+        [Fact]
+        public async Task ExcluirContatoAsync_Should_Delete_Contact_When_Contact_Exists()
+        {
+            // Arrange
+            var contatoId = 1;
+            var contatoExistente = new ContatoBuilder().Build();
+
+            _contatoDomainServiceMock
+                .Setup(service => service.GetByIdAsync(contatoId))
+                .ReturnsAsync(contatoExistente);
+
+            _contatoDomainServiceMock
+                .Setup(service => service.DeleteContatoAsync(contatoId))
+                .Returns(Task.CompletedTask);
+
+            // Act
+            await _contatosService.ExcluirContatoAsync(contatoId);
+
+            // Assert
+            _contatoDomainServiceMock.Verify(service => service.DeleteContatoAsync(contatoId), Times.Once);
+        }
+
+        [Fact]
+        public async Task ExcluirContatoAsync_Should_Throw_ApplicationException_When_Contact_Does_Not_Exist()
+        {
+            // Arrange
+            var contatoId = 1;
+
+            _contatoDomainServiceMock
+                .Setup(service => service.GetByIdAsync(contatoId))
+                .ReturnsAsync((Contato)null);
+
+            // Act
+            Func<Task> action = async () => await _contatosService.ExcluirContatoAsync(contatoId);
+
+            // Assert
+            await action.Should().ThrowAsync<ApplicationException>()
+                .WithMessage("Erro ao excluir contato: Contato não encontrado.");
+        }
+
+        [Fact]
+        public async Task ExcluirContatoAsync_Should_Throw_ApplicationException_When_Unexpected_Error()
+        {
+            // Arrange
+            var contatoId = 1;
+            var contatoExistente = new ContatoBuilder().Build();
+
+            _contatoDomainServiceMock
+                .Setup(service => service.GetByIdAsync(contatoId))
+                .ReturnsAsync(contatoExistente);
+
+            _contatoDomainServiceMock
+                .Setup(service => service.DeleteContatoAsync(contatoId))
+                .ThrowsAsync(new Exception("Erro inesperado"));
+
+            // Act
+            Func<Task> action = async () => await _contatosService.ExcluirContatoAsync(contatoId);
+
+            // Assert
+            await action.Should().ThrowAsync<ApplicationException>()
+                .WithMessage("Erro ao excluir contato: Erro inesperado");
         }
     }
 }

@@ -108,7 +108,7 @@ public class ContatosController : ControllerBase
     [SwaggerOperation(Summary = "Excluir um contato")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> DeleteContato(int id)
+    public async Task<IActionResult> DeletarContato(int id)
     {
         await _contatosAppService.ExcluirContatoAsync(id);
         return Ok("Contato excluído com sucesso");

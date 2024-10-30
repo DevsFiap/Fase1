@@ -25,7 +25,7 @@ namespace TechChallengeFase01.Tests.Mappings
         public void Should_Map_Contact_To_ContactDto()
         {
             // Arrange
-            var contato = new ContactBuilder().Build();
+            var contato = new ContatoBuilder().Build();
             // Act
             var contatoDto = _mapper.Map<ContatoDto>(contato);
 
