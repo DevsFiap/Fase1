@@ -8,7 +8,7 @@ namespace TechChallengeFase01.Tests.Entities
 {
     public class ContatoTests
     {
-        [Fact]
+        [Fact(DisplayName = "Criar objeto Contato com sucesso")]
         public void Contato_Create_Should_Set_Properties()
         {
             // Arrange
@@ -24,7 +24,7 @@ namespace TechChallengeFase01.Tests.Entities
             contato.DataCriacao.Date.Should().Be(DateTime.Now.Date);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Criar objeto Contato com valores padrão")]
         public void Contato_Should_Be_Initialized_With_Default_Values()
         {
             // Arrange
@@ -35,7 +35,7 @@ namespace TechChallengeFase01.Tests.Entities
             contato.Nome.Should().BeNull();
             contato.Telefone.Should().BeNull();
             contato.Email.Should().BeNull();
-            contato.DDDTelefone.Should().Be(It.IsAny<EnumDDD>()); // Supondo que DDD0 é o valor padrão
+            contato.DDDTelefone.Should().Be(It.IsAny<EnumDDD>());
             contato.DataCriacao.Should().Be(DateTime.MinValue);
         }
     }

@@ -23,7 +23,7 @@ namespace TechChallengeFase01.Tests.Services
             _contatosService = new ContatosAppService(_contatoDomainServiceMock.Object, _mapperMock.Object);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Obter contatos com sucesso")]
         public async Task GetContatos_Should_Return_Contacts_When_Contacts_Exist()
         {
             // Arrange
@@ -43,7 +43,7 @@ namespace TechChallengeFase01.Tests.Services
             _mapperMock.Verify(mapper => mapper.Map<List<ContatoDto>>(contatos), Times.Once);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Obter contatos com retorno vazio quando nao encontrar")]
         public async Task GetContatos_Should_Return_Empty_List_When_Contacts_Dont_Exist()
         {
             // Arrange
@@ -63,7 +63,7 @@ namespace TechChallengeFase01.Tests.Services
             _mapperMock.Verify(mapper => mapper.Map<List<ContatoDto>>(emptyContatos), Times.Once);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Obter contatos por DDD com sucesso")]
         public async Task ObterPorDDDAsync_Should_Return_Contacts_When_Contacts_Exist()
         {
             // Arrange
@@ -85,7 +85,7 @@ namespace TechChallengeFase01.Tests.Services
             _mapperMock.Verify(mapper => mapper.Map<IEnumerable<ContatoDto>>(contatos), Times.Once);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Obter contatos por DDD com retorno vazio quando nao encontrar")]
         public async Task ObterPorDDDAsync_Should_Return_Empty_List_When_Contacts_Dont_Exist()
         {
             // Arrange
@@ -107,7 +107,7 @@ namespace TechChallengeFase01.Tests.Services
             _mapperMock.Verify(mapper => mapper.Map<IEnumerable<ContatoDto>>(emptyContatos), Times.Once);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Criar contato com sucesso")]
         public async Task CriarContatoAsync_Should_Return_Contact_Dto_When_Contact_Is_Created_Successfully()
         {
             // Arrange
@@ -130,7 +130,7 @@ namespace TechChallengeFase01.Tests.Services
             result.Should().BeEquivalentTo(contatoDto);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Criar contato - exceção quando telefone invalido")]
         public async Task CriarContatoAsync_Should_Throw_ApplicationException_When_Telefone_Is_Invalid()
         {
             // Arrange
@@ -145,7 +145,7 @@ namespace TechChallengeFase01.Tests.Services
                 && x.InnerException.Message.Contains("O telefone deve ter pelo menos 10 dígitos (DDD + número)."));
         }
 
-        [Fact]
+        [Fact(DisplayName = "Criar contato - exceção quando erro inesperado")]
         public async Task CriarContatoAsync_Should_Throw_ApplicationException_When_Unexpected_Error()
         {
             // Arrange
@@ -163,7 +163,7 @@ namespace TechChallengeFase01.Tests.Services
                 .WithMessage("Erro ao criar contato.");
         }
 
-        [Fact]
+        [Fact(DisplayName = "Atualizar contato com sucesso")]
         public async Task AtualizarContatoAsync_Should_Return_ContactDto_When_Update_Is_Successful()
         {
             // Arrange
@@ -193,7 +193,7 @@ namespace TechChallengeFase01.Tests.Services
             result.Should().BeEquivalentTo(contatoDto);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Atualizar contato - exceção quando contato não existir")]
         public async Task AtualizarContatoAsync_Should_Throw_ApplicationException_When_Contact_Does_Not_Exist()
         {
             // Arrange
@@ -212,7 +212,7 @@ namespace TechChallengeFase01.Tests.Services
                 .WithMessage("Erro ao atualizar contato: Contato não encontrado.");
         }
 
-        [Fact]
+        [Fact(DisplayName = "Atualizar contato - exceção quando contato telefone for inválido")]
         public async Task AtualizarContatoAsync_Should_Throw_ApplicationException_When_Telefone_Is_Invalid()
         {
             // Arrange
@@ -233,7 +233,7 @@ namespace TechChallengeFase01.Tests.Services
                 .WithMessage("Erro ao atualizar contato: O telefone deve ter pelo menos 10 dígitos (DDD + número).*");
         }
 
-        [Fact]
+        [Fact(DisplayName = "Atualizar contato - exceção quando houver erro inesperado")]
         public async Task AtualizarContatoAsync_Should_Throw_ApplicationException_When_Unexpected_Error()
         {
             // Arrange
@@ -258,7 +258,7 @@ namespace TechChallengeFase01.Tests.Services
                 .WithMessage("Erro ao atualizar contato: Erro inesperado");
         }
 
-        [Fact]
+        [Fact(DisplayName = "Excluir contato com sucesso")]
         public async Task ExcluirContatoAsync_Should_Delete_Contact_When_Contact_Exists()
         {
             // Arrange
@@ -280,7 +280,7 @@ namespace TechChallengeFase01.Tests.Services
             _contatoDomainServiceMock.Verify(service => service.DeleteContatoAsync(contatoId), Times.Once);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Excluir contato - exceção quando contato não existir")]
         public async Task ExcluirContatoAsync_Should_Throw_ApplicationException_When_Contact_Does_Not_Exist()
         {
             // Arrange
@@ -298,7 +298,7 @@ namespace TechChallengeFase01.Tests.Services
                 .WithMessage("Erro ao excluir contato: Contato não encontrado.");
         }
 
-        [Fact]
+        [Fact(DisplayName = "Excluir contato - exceção quando houver erro inesperado")]
         public async Task ExcluirContatoAsync_Should_Throw_ApplicationException_When_Unexpected_Error()
         {
             // Arrange
