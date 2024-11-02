@@ -176,7 +176,7 @@ namespace TechChallengeFase01.Tests.Controller
             okResult.Value.Should().BeEquivalentTo(contatoAtualizado);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Deletar contato com sucesso")]
         public async Task DeletarContato_Should_Return_Ok_When_Contact_Is_Deleted_Successfully()
         {
             // Arrange

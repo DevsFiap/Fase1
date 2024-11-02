@@ -22,7 +22,7 @@ namespace TechChallengeFase01.Tests.Repositories
             _repository = new ContatoRepository(_contextMock);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Obter por DDD - exceção ao receber DDD invalido")]
         public async Task GetByDDDAsync_Should_Throw_ArgumentException_When_DDD_Is_Invalid()
         {
             // Arrange
